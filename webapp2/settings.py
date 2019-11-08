@@ -25,7 +25,7 @@ SECRET_KEY = '1xlxrvc)_w0hd!qv3^ip)ax#yn4@4g6o@dtp+y6=rao%^f6^tl'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["webapp2-t-dev.us-west-2.elasticbeanstalk.com", "localhost"]
+ALLOWED_HOSTS = ['https://blooming-castle-96938.herokuapp.com']
 
 
 # Application definition
