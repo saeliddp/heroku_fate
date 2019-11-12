@@ -25,34 +25,14 @@ alg_to_snippets = {
 
 # whether or not to swap the left and right algorithms on a given turn
 swap = [False, True, True, False, True, True, True, False, False, False, False, False, True, True, False, False, True, False, True, True]
-unseen_qids = []
-num_qids_seen = 0
-curr_qid = 0
+curr_qid = 1
 respondent = None
 
-for qid in alg_to_snippets[left_alg]:
-    unseen_qids.append(qid)
 def reset():
-    global unseen_qids
-    global num_qids_seen
     global curr_qid
     global left_alg
     global right_alg
-    unseen_qids = []
-    for qid in alg_to_snippets[left_alg]:
-        unseen_qids.append(qid)
-    curr_qid = 0
-    num_qids_seen = 0
-
-def getRandomQid():
-    new_qid = unseen_qids[random.randint(0, len(unseen_qids) - 1)]
-    unseen_qids.remove(new_qid)
-    return new_qid
-    
-def getNextQid():
-    new_qid = unseen_qids[0]
-    unseen_qids.remove(new_qid)
-    return new_qid
+    curr_qid = 1
 
 def consent(request):
     reset()
@@ -77,23 +57,22 @@ def instructions(request):
 
 def home(request):
     global curr_qid
-    curr_qid = getNextQid()
     context = {
         'left_snippets': alg_to_snippets[left_alg][curr_qid],
         'right_snippets': alg_to_snippets[right_alg][curr_qid],
-        'query_name': alg_to_snippets[right_alg][curr_qid][0][0]
+        'query_name': alg_to_snippets[right_alg][curr_qid][0][0],
+        'curr_qid': curr_qid
     }
     return render(request, 'version2/home.html', context);
 
 def update(request):
-    global num_qids_seen
     global curr_qid
     global left_alg
     global right_alg
-    global num_responses
+    # this will always be 1 + the actual curr_qid
+    curr_qid = int(request.GET['curr_qid'])
     
-    num_qids_seen += 1
-    if (num_qids_seen <= 20):
+    if (curr_qid <= 21):
         # send data to server
         # we will have to have a 'None' algorithm in our database to represent 
         # if the user didn't choose at all
@@ -116,17 +95,18 @@ def update(request):
                             time_elapsed=int(request.GET['time_elapsed']))
         response.save()
         """
-        if num_qids_seen == 10:
+        if curr_qid == 12:
+            print("switching algos")
             left_alg = round_two_l
             right_alg = round_two_r
             
-        if swap[num_qids_seen - 1]:
+        if swap[curr_qid - 2]:
             temp = left_alg
             left_alg = right_alg
             right_alg = temp
             
         # redirect to home
-        if num_qids_seen < 20:
+        if curr_qid < 21:
             return redirect('version2-home')
         else:
             return redirect('version2-thanks')
