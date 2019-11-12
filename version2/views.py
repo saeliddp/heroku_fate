@@ -74,7 +74,7 @@ def home(request, id):
                             time_elapsed=int(request.GET['time_elapsed']))
         response.save()
         """
-        if id == 10:
+        if id == 11:
             print("switching algos")
             left_alg = round_two_l
             right_alg = round_two_r
@@ -83,7 +83,7 @@ def home(request, id):
             temp = left_alg
             left_alg = right_alg
             right_alg = temp
-    if id < 20:
+    if id <= 20:
         context = {
             'left_snippets': alg_to_snippets[left_alg][id],
             'right_snippets': alg_to_snippets[right_alg][id],
