@@ -187,7 +187,7 @@
   </div>
 
   <!-- Sets up the input form -->
-  <form action="../update/" id="main_form" method="get">
+  <form action="../home{{ curr_qid }}/" id="main_form" method="get">
   <div class="row main_divs">
     <div class="radio_div">
       <input type="radio" name="radio" value="left" id="radio-left" class="form-radio">
@@ -206,7 +206,6 @@
     </div>
   </div>
   <input type="hidden" name="time_elapsed" value="0" id="time_elapsed_input">
-  <input type="hidden" name="curr_qid" value="{{ curr_qid }}" id="curr_qid_input">
   </form>
 </body>
 <script>
@@ -224,7 +223,6 @@ function updateSeconds() {
 	}
 }
 updateSeconds();
-document.getElementById("curr_qid_input").value = "" + (parseInt(document.getElementById("curr_qid_input").value) + 1);
 setInterval(updateSeconds, 1000);
 </script>
 </html>

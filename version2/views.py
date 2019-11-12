@@ -5,8 +5,6 @@ from django.shortcuts import redirect
 from version2.models import *
 import random
 
-from django.views.decorators.cache import never_cache
-
 num_search_results = 5
 # algorithms to be initially displayed on the left and right, respectively
 left_alg = "0g"
@@ -27,17 +25,9 @@ alg_to_snippets = {
 
 # whether or not to swap the left and right algorithms on a given turn
 swap = [False, True, True, False, True, True, True, False, False, False, False, False, True, True, False, False, True, False, True, True]
-curr_qid = 1
 respondent = None
 
-def reset():
-    global curr_qid
-    global left_alg
-    global right_alg
-    curr_qid = 1
-
 def consent(request):
-    reset()
     return render(request, 'version2/consent.html')
     
 def demographics(request):
@@ -57,26 +47,11 @@ def demographics(request):
 def instructions(request):
     return render(request, 'version2/instructions.html')
 
-@never_cache
-def home(request):
-    global curr_qid
-    context = {
-        'left_snippets': alg_to_snippets[left_alg][curr_qid],
-        'right_snippets': alg_to_snippets[right_alg][curr_qid],
-        'query_name': alg_to_snippets[right_alg][curr_qid][0][0],
-        'curr_qid': curr_qid
-    }
-    return render(request, 'version2/home.html', context);
-
-@never_cache
-def update(request):
-    global curr_qid
+def home(request, id):      
     global left_alg
     global right_alg
-    # this will always be 1 + the actual curr_qid
-    curr_qid = int(request.GET['curr_qid'])
     
-    if (curr_qid <= 21):
+    if id > 1 and id <= 20:
         # send data to server
         # we will have to have a 'None' algorithm in our database to represent 
         # if the user didn't choose at all
@@ -99,21 +74,23 @@ def update(request):
                             time_elapsed=int(request.GET['time_elapsed']))
         response.save()
         """
-        if curr_qid == 12:
+        if id == 10:
             print("switching algos")
             left_alg = round_two_l
             right_alg = round_two_r
             
-        if swap[curr_qid - 2]:
+        if swap[id - 1]:
             temp = left_alg
             left_alg = right_alg
             right_alg = temp
-            
-        # redirect to home
-        if curr_qid < 21:
-            return redirect('version2-home')
-        else:
-            return redirect('version2-thanks')
+    if id < 20:
+        context = {
+            'left_snippets': alg_to_snippets[left_alg][id],
+            'right_snippets': alg_to_snippets[right_alg][id],
+            'query_name': alg_to_snippets[right_alg][id][0][0],
+            'curr_qid': id + 1
+        }
+        return render(request, 'version2/home.html', context);
     else:
         return redirect('version2-thanks')
 
