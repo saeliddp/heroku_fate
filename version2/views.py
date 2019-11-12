@@ -109,7 +109,7 @@ def update(request):
                 choice = right_alg
                 not_choice = left_alg
 
-        print("User chose: " + choice)
+        #print("User chose: " + choice)
         """ Uncomment for database action
         response = Response(respondent=respondent,
                             query=Query.objects.filter(query_id=curr_qid)[0],
@@ -119,12 +119,12 @@ def update(request):
         response.save()
         """
         if num_qids_seen == 10:
-            print("Switching to second and third")
+            #print("Switching to second and third")
             left_alg = round_two_l
             right_alg = round_two_r
             
         if swap[num_qids_seen - 1]:
-            print("Swapping")
+            #print("Swapping")
             temp = left_alg
             left_alg = right_alg
             right_alg = temp
