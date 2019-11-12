@@ -78,8 +78,6 @@ def instructions(request):
 def home(request):
     global curr_qid
     curr_qid = getNextQid()
-    print("Left: " + left_alg)
-    print("Right: " + right_alg)
     context = {
         'left_snippets': alg_to_snippets[left_alg][curr_qid],
         'right_snippets': alg_to_snippets[right_alg][curr_qid],
@@ -119,12 +117,10 @@ def update(request):
         response.save()
         """
         if num_qids_seen == 10:
-            #print("Switching to second and third")
             left_alg = round_two_l
             right_alg = round_two_r
             
         if swap[num_qids_seen - 1]:
-            #print("Swapping")
             temp = left_alg
             left_alg = right_alg
             right_alg = temp
