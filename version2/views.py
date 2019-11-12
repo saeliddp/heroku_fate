@@ -5,6 +5,8 @@ from django.shortcuts import redirect
 from version2.models import *
 import random
 
+from django.views.decorators.cache import never_cache
+
 num_search_results = 5
 # algorithms to be initially displayed on the left and right, respectively
 left_alg = "0g"
@@ -55,6 +57,7 @@ def demographics(request):
 def instructions(request):
     return render(request, 'version2/instructions.html')
 
+@never_cache
 def home(request):
     global curr_qid
     context = {
@@ -65,6 +68,7 @@ def home(request):
     }
     return render(request, 'version2/home.html', context);
 
+@never_cache
 def update(request):
     global curr_qid
     global left_alg
