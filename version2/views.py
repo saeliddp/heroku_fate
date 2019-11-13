@@ -42,14 +42,12 @@ def demographics(request):
     if 'age' in request.GET:
         global respondent
         ip = get_ip_address(request)
-        """ Uncomment for database action
         respondent = Respondent(
             age=request.GET['age'],
             gender=request.GET['gender'],
             education=request.GET['education'],
             ip_address=ip)
         respondent.save()
-        """
         return redirect('version2-instructions')
     else:
         return render(request, 'version2/demographics.html')
@@ -76,14 +74,12 @@ def home(request, id):
                 not_choice = left_alg
 
         #print("User chose: " + choice)
-        """ Uncomment for database action
         response = Response(respondent=respondent,
                             query=Query.objects.filter(query_id=curr_qid)[0],
                             chosen_alg=Algorithm.objects.filter(name=choice)[0],
                             unchosen_alg=Algorithm.objects.filter(name=not_choice)[0],
                             time_elapsed=int(request.GET['time_elapsed']))
         response.save()
-        """
         if id == 11:
             print("switching algos")
             left_alg = round_two_l
