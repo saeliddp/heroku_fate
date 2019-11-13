@@ -59,7 +59,7 @@ def home(request, id):
     global left_alg
     global right_alg
     
-    if id > 1 and id <= 20:
+    if id > 1 and id <= 21:
         # send data to server
         # we will have to have a 'None' algorithm in our database to represent 
         # if the user didn't choose at all
@@ -73,9 +73,9 @@ def home(request, id):
                 choice = right_alg
                 not_choice = left_alg
 
-        #print("User chose: " + choice)
+        print("User chose: " + choice)
         response = Response(respondent=respondent,
-                            query=Query.objects.filter(query_id=curr_qid)[0],
+                            query=Query.objects.filter(query_id=id-1)[0],
                             chosen_alg=Algorithm.objects.filter(name=choice)[0],
                             unchosen_alg=Algorithm.objects.filter(name=not_choice)[0],
                             time_elapsed=int(request.GET['time_elapsed']))
@@ -85,7 +85,7 @@ def home(request, id):
             left_alg = round_two_l
             right_alg = round_two_r
             
-        if swap[id - 1]:
+        if swap[id - 2]:
             temp = left_alg
             left_alg = right_alg
             right_alg = temp
