@@ -24,7 +24,7 @@ alg_to_snippets = {
 }
 
 # whether or not to swap the left and right algorithms on a given turn
-swap = [False, True, True, False, True, True, True, False, False, False, False, False, True, True, False, False, True, False, True, True]
+swap = [False, True, True, False, True, True, True, False, False, False, False, False, True, True, False, False, True, False, True, True, False]
 respondent = None
 def get_ip_address(request):
     """ use requestobject to fetch client machine's IP Address """
@@ -55,6 +55,22 @@ def demographics(request):
 def instructions(request):
     return render(request, 'version2/instructions.html')
 
+def getAlgs(id):
+    if id < 11 and !swap[id-1]:
+        left_alg = round_one_l
+        right_alg = round_one_r
+    elif id < 11:
+        left_alg = round_one_r
+        right_alg = round_one_l
+    elif !swap[id-1]:
+        left_alg = round_two_l
+        right_alg = round_two_r
+    else:
+        left_alg = round_two_r
+        right_alg = round_two_l
+    
+    return [left_alg, right_alg]
+
 def home(request, id):      
     global left_alg
     global right_alg
@@ -64,19 +80,25 @@ def home(request, id):
         respid = request.GET['respondent_id']
     else:
         respid = respondent.id
+        
+    left_alg = getAlgs(id)[0]
+    right_alg = getAlgs(id)[1]
+        
     if id > 1 and id <= 21:
         # send data to server
         # we will have to have a 'None' algorithm in our database to represent 
         # if the user didn't choose at all
+        prev_left_alg = getAlgs(id-1)[0]
+        prev_right_alg = getAlgs(id-1)[1]
         choice = 'None'
         not_choice = 'None'
         if 'radio' in request.GET:
             if request.GET['radio'] == 'left':
-                choice = left_alg
-                not_choice = right_alg
+                choice = prev_left_alg
+                not_choice = prev_right_alg
             else:
-                choice = right_alg
-                not_choice = left_alg
+                choice = prev_right_alg
+                not_choice = prev_left_alg
 
         print("User chose: " + choice)
         response = Response(respondent=Respondent.objects.filter(id=respid)[0],
@@ -85,15 +107,7 @@ def home(request, id):
                             unchosen_alg=Algorithm.objects.filter(name=not_choice)[0],
                             time_elapsed=int(request.GET['time_elapsed']))
         response.save()
-        if id == 11:
-            print("switching algos")
-            left_alg = round_two_l
-            right_alg = round_two_r
-            
-        if swap[id - 2]:
-            temp = left_alg
-            left_alg = right_alg
-            right_alg = temp
+        
     if id <= 20:
         context = {
             'left_snippets': alg_to_snippets[left_alg][id],
