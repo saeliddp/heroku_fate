@@ -26,18 +26,28 @@ alg_to_snippets = {
 # whether or not to swap the left and right algorithms on a given turn
 swap = [False, True, True, False, True, True, True, False, False, False, False, False, True, True, False, False, True, False, True, True]
 respondent = None
-
+def get_ip_address(request):
+    """ use requestobject to fetch client machine's IP Address """
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')    ### Real IP address of client Machine
+    return ip 
+    
 def consent(request):
     return render(request, 'version2/consent.html')
     
 def demographics(request):
     if 'age' in request.GET:
         global respondent
+        ip = get_ip_address(request)
         """ Uncomment for database action
         respondent = Respondent(
             age=request.GET['age'],
             gender=request.GET['gender'],
-            education=request.GET['education'])
+            education=request.GET['education'],
+            ip_address=ip)
         respondent.save()
         """
         return redirect('version2-instructions')
