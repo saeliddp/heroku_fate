@@ -26,7 +26,6 @@ alg_to_snippets = {
 # whether or not to swap the left and right algorithms on a given turn
 swap = [False, True, True, False, True, True, True, False, False, False, False, False, True, True, False, False, True, False, True, True]
 respondent = None
-respondentid = -1
 def get_ip_address(request):
     """ use requestobject to fetch client machine's IP Address """
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
@@ -42,7 +41,6 @@ def consent(request):
 def demographics(request):
     if 'age' in request.GET:
         global respondent
-        global respondentid
         ip = get_ip_address(request)
         respondent = Respondent(
             age=request.GET['age'],
@@ -50,7 +48,6 @@ def demographics(request):
             education=request.GET['education'],
             ip_addr=ip)
         respondent.save()
-        respondentid = respondent.id
         return redirect('version2-instructions')
     else:
         return render(request, 'version2/demographics.html')
@@ -61,10 +58,13 @@ def instructions(request):
 def home(request, id):      
     global left_alg
     global right_alg
-    global respondentid
-    
+    global respondent
+    respid = -1
+    if 'respondent_id' in request.GET:
+        respid = request.GET['respondent_id']
+    else:
+        respid = respondent.id
     if id > 1 and id <= 21:
-        respondentid = request.GET['respondent_id']
         # send data to server
         # we will have to have a 'None' algorithm in our database to represent 
         # if the user didn't choose at all
@@ -79,7 +79,7 @@ def home(request, id):
                 not_choice = left_alg
 
         print("User chose: " + choice)
-        response = Response(respondent_id=respondentid,
+        response = Response(respondent_id=respid,
                             query_id=id-1,
                             chosen_alg_id=Algorithm.objects.filter(name=choice)[0].id,
                             unchosen_alg_id=Algorithm.objects.filter(name=not_choice)[0].id,
@@ -100,7 +100,7 @@ def home(request, id):
             'right_snippets': alg_to_snippets[right_alg][id],
             'query_name': alg_to_snippets[right_alg][id][0][0],
             'curr_qid': id + 1,
-            'respondent_id': respondentid
+            'respondent_id': respid
         }
         return render(request, 'version2/home.html', context);
     else:
