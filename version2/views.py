@@ -34,6 +34,7 @@ def get_ip_address(request):
     else:
         ip = request.META.get('REMOTE_ADDR', None)
     return ip
+    
 def consent(request):
     return render(request, 'version2/consent.html')
     

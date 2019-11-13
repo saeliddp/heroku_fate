@@ -6,7 +6,7 @@ class Respondent(models.Model):
     age = models.CharField(max_length=50, default="None") # since age is a range
     gender = models.CharField(max_length=50, default="None")
     education = models.CharField(max_length=50, default="None")
-    ip_address = models.GenericIPAddressField(default="0.0.0.0")
+    ip_address = models.CharField(default="0.0.0.0")
     
     def __str__(self):
         return self.age + ", " + self.gender + ", " + self.education
