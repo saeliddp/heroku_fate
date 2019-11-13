@@ -61,8 +61,10 @@ def instructions(request):
 def home(request, id):      
     global left_alg
     global right_alg
+    global respondentid
     
     if id > 1 and id <= 21:
+        respondentid = request.GET['respondent_id']
         # send data to server
         # we will have to have a 'None' algorithm in our database to represent 
         # if the user didn't choose at all
@@ -97,7 +99,8 @@ def home(request, id):
             'left_snippets': alg_to_snippets[left_alg][id],
             'right_snippets': alg_to_snippets[right_alg][id],
             'query_name': alg_to_snippets[right_alg][id][0][0],
-            'curr_qid': id + 1
+            'curr_qid': id + 1,
+            'respondent_id': respondentid
         }
         return render(request, 'version2/home.html', context);
     else:
