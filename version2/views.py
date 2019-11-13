@@ -46,7 +46,7 @@ def demographics(request):
             age=request.GET['age'],
             gender=request.GET['gender'],
             education=request.GET['education'],
-            ip_address=ip)
+            ip_addr=ip)
         respondent.save()
         return redirect('version2-instructions')
     else:
