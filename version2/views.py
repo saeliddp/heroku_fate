@@ -79,10 +79,10 @@ def home(request, id):
                 not_choice = left_alg
 
         print("User chose: " + choice)
-        response = Response(respondent_id=respid,
-                            query_id=id-1,
-                            chosen_alg_id=Algorithm.objects.filter(name=choice)[0].id,
-                            unchosen_alg_id=Algorithm.objects.filter(name=not_choice)[0].id,
+        response = Response(respondent=Respondent.objects.filter(id=respid)[0],
+                            query=Query.objects.filter(query_id=id-1)[0],
+                            chosen_alg=Algorithm.objects.filter(name=choice)[0],
+                            unchosen_alg=Algorithm.objects.filter(name=not_choice)[0],
                             time_elapsed=int(request.GET['time_elapsed']))
         response.save()
         if id == 11:

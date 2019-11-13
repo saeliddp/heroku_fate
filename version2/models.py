@@ -27,15 +27,15 @@ class Query(models.Model):
         return self.query_name
     
 class Response(models.Model):
-    respondent_id = models.IntegerField()
-    query_id = models.IntegerField()
-    chosen_alg_id = models.IntegerField()
-    unchosen_alg_id = models.IntegerField()
+    respondent = models.ForeignKey(Respondent, on_delete=models.CASCADE)
+    query = models.ForeignKey(Query, on_delete=models.CASCADE)
+    chosen_alg = models.ForeignKey(Algorithm, on_delete=models.CASCADE, related_name="chosen")
+    unchosen_alg = models.ForeignKey(Algorithm, on_delete=models.CASCADE, related_name="unchosen")
     # if we want to store more accurate time data, change this
     time_elapsed = models.PositiveSmallIntegerField()
     
     def __str__(self):
-        return "Query: " + Query.objects.filter(query_id=self.query_id)[0].query_name
+        return "Query: " + self.query.query_name + "Choice: " + self.chosen_alg.name
     
     
 
