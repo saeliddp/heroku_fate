@@ -48,12 +48,15 @@ def demographics(request):
             education=request.GET['education'],
             ip_addr=ip)
         respondent.save()
-        return redirect('version2-instructions')
+        return redirect('version2-instructions', respondent_id=respondent.id)
     else:
         return render(request, 'version2/demographics.html')
     
-def instructions(request):
-    return render(request, 'version2/instructions.html')
+def instructions(request, respondent_id):
+    context = {
+        'respondent_id': respondent_id
+    }
+    return render(request, 'version2/instructions.html', context)
 
 def getAlgs(id):
     if id < 11 and not swap[id-1]:
@@ -74,24 +77,20 @@ def getAlgs(id):
 def home(request, id):      
     global left_alg
     global right_alg
-    global respondent
-    respid = -1
-    if 'respondent_id' in request.GET:
-        respid = request.GET['respondent_id']
-    else:
-        respid = respondent.id
+    
+    respid = request.GET['respondent_id']
         
     left_alg = getAlgs(id)[0]
     right_alg = getAlgs(id)[1]
         
     if id > 1 and id <= 21:
         # send data to server
-        # we will have to have a 'None' algorithm in our database to represent 
+        # we will have to have a 'NO_CHOICE' algorithm in our database to represent 
         # if the user didn't choose at all
         prev_left_alg = getAlgs(id-1)[0]
         prev_right_alg = getAlgs(id-1)[1]
-        choice = 'None'
-        not_choice = 'None'
+        choice = 'NO_CHOICE'
+        not_choice = 'NO_CHOICE'
         if 'radio' in request.GET:
             if request.GET['radio'] == 'left':
                 choice = prev_left_alg
@@ -100,7 +99,6 @@ def home(request, id):
                 choice = prev_right_alg
                 not_choice = prev_left_alg
 
-        print("User chose: " + choice)
         response = Response(respondent=Respondent.objects.filter(id=respid)[0],
                             query=Query.objects.filter(query_id=id-1)[0],
                             chosen_alg=Algorithm.objects.filter(name=choice)[0],
