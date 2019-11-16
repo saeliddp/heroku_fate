@@ -19,6 +19,10 @@
     .mturk-id input {
       margin-top: 5px;
     }
+
+    #phrase {
+      display: none;
+    }
   </style>
   <title>Search Result Survey</title>
 </head>
@@ -26,12 +30,23 @@
 <h1 class="header">Thank you!</h1>
   
 <div class="mturk-id">
-  <form>
-    <label for="mturk-id">Please enter your <b>MTurk Worker ID</b> to receive credit:</label><br>
+  <form id='form'>
+    <label for="mturk-id">Please enter your <b>MTurk Worker ID</b>:</label><br>
     <input type="text" name="mturk-id" required size="20">
-    <input type="submit" value="submit">
-</form>
+    <input type="button" id="submit" value="submit">
+  </form>
+  <div id="phrase">
+    <p>Please enter DF45ST6X in your HIT in MTurk to receive credit.</p>
+  </div>
 </div>
 
 </body>
 </html>
+
+<script>
+  document.getElementById('submit').addEventListener('click', displayPhrase);
+  function displayPhrase() {
+    document.getElementById('form').style.display = 'none';
+    document.getElementById('phrase').style.display = 'flex';
+  }
+</script>

@@ -69,7 +69,8 @@ img {
   <p>4. You will then be directed to the next pair of results for a new search term </p>
   <p>Here is a quick DEMO:</p>
 </div>
-<img src="demo.jpg" alt="demo">
+{% load staticfiles %}
+<img src="{% static 'myapp/demo.jpg' %}" alt="demo">
 <div style="text-align: center">
 	<form action="../home1/" id="to_home">
 	<input type="hidden" name="respondent_id" value="{{ respondent_id }}">
