@@ -8,10 +8,10 @@ import random
 num_search_results = 5
 # algorithms to be initially displayed on the left and right, respectively
 left_alg = "0g"
-right_alg = "01gfp"
+right_alg = "03gfp"
 # algorithms to be displayed on left and right after 10 turns
 round_one_l = "0g"
-round_one_r = "01gfp"
+round_one_r = "03gfp"
 round_two_l = "05gfp"
 round_two_r = "09gfp"
 

@@ -25,6 +25,7 @@ def binarySnippetSearch(low_index, high_index, og_rank, snippet_list):
     if median_rank == og_rank:
         return snippet_list[median]
     elif low_index == high_index:
+        print("couldn't find snippet with og_rank" + str(og_rank))
         return None
     elif low_index == high_index - 1:
         return binarySnippetSearch(high_index, high_index, og_rank, snippet_list)
@@ -32,7 +33,6 @@ def binarySnippetSearch(low_index, high_index, og_rank, snippet_list):
         return binarySnippetSearch(median, high_index, og_rank, snippet_list)
     else:
         return binarySnippetSearch(low_index, median, og_rank, snippet_list)
-        
 
 """
 returns snippet data in the format:
@@ -80,9 +80,10 @@ def extractFromFile(file_name, num_snippets):
             query_snippet = query_snippet_list[qid - 1]
             snippet_list = query_snippet.snippetList            
             curr_snippet = binarySnippetSearch(0, len(snippet_list) - 1, og_rank, snippet_list)
-            
-            if og_rank != int(curr_snippet.get_rank()):
-                print("Current Snippet's original rank is unequal to the 'r' field in the .txt file.")
+            if curr_snippet is None:
+                print(curr_qid)
+            #if og_rank != int(curr_snippet.get_rank()):
+                #print("Current Snippet's original rank is unequal to the 'r' field in the .txt file.")
                 
             # [query_name, title, url, description]
             # replaces double quotes with single quotes
