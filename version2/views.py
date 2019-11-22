@@ -42,11 +42,18 @@ def demographics(request):
     if 'age' in request.GET:
         global respondent
         ip = get_ip_address(request)
+        browser_info = request.user_agent.os.family + " " + request.user_agent.browser.family + " "
+        if request.user_agent.is_pc:
+            browser_info += "PC"
+        else:
+            browser_info += "Mobile"
+            
         respondent = Respondent(
             age=request.GET['age'],
             gender=request.GET['gender'],
             education=request.GET['education'],
-            ip_addr=ip)
+            ip_addr=ip,
+            browser=browser_info)
         respondent.save()
         return redirect('version2-instructions', respondent_id=respondent.id)
     else:

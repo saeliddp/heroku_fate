@@ -8,6 +8,7 @@ class Respondent(models.Model):
     education = models.CharField(max_length=50, default="None")
     ip_addr = models.CharField(max_length=50, default="0.0.0.0")
     mturk_id = models.CharField(max_length=50, default="None")
+    browser = models.CharField(max_length=70, default="None")
     
     def __str__(self):
         return self.age + ", " + self.gender + ", " + self.education
