@@ -155,12 +155,12 @@
 </head>
 
 <body style="background-color: #f2f2f2">
-
   <h1 class="header">Search Result Survey</h1>
 
   <!-- Sets up the Query bar -->
   <div class="main_divs">
     <p class="query" id="qstring">Search: {{ query_name }}</p>
+	
   </div>
 
   <!-- Sets up the two sets of search results -->
@@ -203,6 +203,8 @@
   <div class="main_divs">
     <div style="text-align: center">
 		<input type="submit" value="submit" class="button">
+		<p class="timer" id="remaining">{{ curr_qid }}</p>
+
     </div>
   </div>
   <input type="hidden" name="time_elapsed" value="0" id="time_elapsed_input">
@@ -225,5 +227,7 @@ function updateSeconds() {
 }
 updateSeconds();
 setInterval(updateSeconds, 1000);
+rem = 22 - parseInt(document.getElementById("remaining").innerHTML)
+document.getElementById("remaining").innerHTML = "Questions Remaining: " + rem.toString();
 </script>
 </html>
