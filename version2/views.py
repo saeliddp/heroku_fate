@@ -116,8 +116,17 @@ def home(request, id):
         }
         return render(request, 'version2/home.html', context);
     else:
-        return redirect('version2-thanks')
+        return redirect('version2-thanks', respondent_id=respid)
 
-def thanks(request):
-    return render(request, 'version2/thanks.html')
+def thanks(request, respondent_id):
+    context = {
+        'respondent_id': respondent_id
+    }
+    if 'mturk_id' in request.GET:
+        resp = Respondent.objects.filter(id=respondent_id)[0]
+        resp.mturk_id = request.GET['mturk_id']
+        resp.save()
+        return render(request, 'version2/code.html')
+    else:
+        return render(request, 'version2/thanks.html', context)
     
