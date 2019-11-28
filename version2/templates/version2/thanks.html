@@ -14,6 +14,7 @@
       display: table;
       margin: auto;
       margin-top: 50px;
+	  text-align: center;
     }
 
     .mturk-id input {
@@ -30,8 +31,9 @@
 <h1 class="header">Thank you!</h1>
   
 <div class="mturk-id">
-  <form action='../thanks{{ respondent_id }}/' id='main_form' method='get'>
-    <label for="mturk-id">Please enter your <b>MTurk Worker ID</b>:</label><br>
+  <p>Thank you for taking this survey. Your participation is now complete.</p>
+  <form action='../thanks{{ respondent_id }}/' id='main_form' method='get'>	
+    <label for="mturk-id">Please enter your <b>MTurk Worker ID</b> below:</label><br>
     <input type="text" name="mturk_id">
     <input type="submit" id="submit" value="submit">
   </form>
