@@ -26,7 +26,7 @@ alg_to_snippets = {
 
 # whether or not to swap the left and right algorithms on a given turn
 swap = [False, True, True, False, True, True, True, False, False, False, False, False, True, True, False, False, True, False, True, True, False]
-respondent = None
+
 def get_ip_address(request):
     """ use requestobject to fetch client machine's IP Address """
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
@@ -82,74 +82,67 @@ def getAlgs(id):
     
     return [left_alg, right_alg]
 
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def redir(request, q_id, respondent_id):
     user = Respondent.objects.filter(id=respondent_id)[0]
-    user.curr_q = max([user.curr_q, q_id])
-    user.save()
     id = user.curr_q
+    
+    if id < q_id:
+        choice = 'NO_CHOICE'
+        not_choice = 'NO_CHOICE'
+        if 'radio' in request.GET:
+            left_alg = getAlgs(id)[0]
+            right_alg = getAlgs(id)[1]
+            if request.GET['radio'] == 'left':
+                choice = left_alg
+                not_choice = right_alg
+            else:
+                choice = right_alg
+                not_choice = left_alg
         
-    if 'radio' in request.GET:
-        context = {
-            'curr_qid': id,
-            'respondent_id': respondent_id,
-            'radio': request.GET['radio'],
-            'time_elapsed': request.GET['time_elapsed']
-        }
-    else:
-        context = {
-            'curr_qid': id,
-            'respondent_id': respondent_id,
-            'radio': 'redir',
-            'time_elapsed': '-1'
-        }
-    return render(request, 'version2/redir.html', context)
+        if 'time_elapsed' in request.GET:
+            response = Response(respondent=user,
+                                query=Query.objects.filter(query_id=id)[0],
+                                chosen_alg=Algorithm.objects.filter(name=choice)[0],
+                                unchosen_alg=Algorithm.objects.filter(name=not_choice)[0],
+                                time_elapsed=int(request.GET['time_elapsed']))
+            response.save()
+        
+        id += 1
+        user.curr_q = id 
+        user.save()
+    
+    context = {
+        'curr_qid': id,
+        'respondent_id': respondent_id
+    }
+        
+    return redirect('version2-home', q_id = id, respondent_id=respondent_id)
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def home(request, q_id, respondent_id):    
-    request.session.flush()
+    user = Respondent.objects.filter(id=respondent_id)[0]
+    
+    if user.curr_q != q_id:
+        return redirect('version2-redir', q_id=q_id, respondent_id=respondent_id)
+        
     global left_alg
     global right_alg
-    
-    respid = respondent_id
-    user = Respondent.objects.filter(id=respid)[0]
-    id = q_id
         
-    left_alg = getAlgs(id)[0]
-    right_alg = getAlgs(id)[1]
-        
-    if id > 1 and id <= 21 and request.GET['radio'] != 'redir' and request.GET['time_elapsed'] != '-1':
-        # send data to server
-        # we will have to have a 'NO_CHOICE' algorithm in our database to represent 
-        # if the user didn't choose at all
-        prev_left_alg = getAlgs(id-1)[0]
-        prev_right_alg = getAlgs(id-1)[1]
-        choice = 'NO_CHOICE'
-        not_choice = 'NO_CHOICE'
-        if 'radio' in request.GET and request.GET['radio'] != 'redir':
-            if request.GET['radio'] == 'left':
-                choice = prev_left_alg
-                not_choice = prev_right_alg
-            else:
-                choice = prev_right_alg
-                not_choice = prev_left_alg
-
-        response = Response(respondent=user,
-                            query=Query.objects.filter(query_id=id-1)[0],
-                            chosen_alg=Algorithm.objects.filter(name=choice)[0],
-                            unchosen_alg=Algorithm.objects.filter(name=not_choice)[0],
-                            time_elapsed=int(request.GET['time_elapsed']))
-        response.save()
-    if id <= 20:
+    left_alg = getAlgs(q_id)[0]
+    right_alg = getAlgs(q_id)[1]
+    request.session.flush()
+    if q_id <= 20:
         context = {
-            'left_snippets': alg_to_snippets[left_alg][id],
-            'right_snippets': alg_to_snippets[right_alg][id],
-            'query_name': alg_to_snippets[right_alg][id][0][0],
-            'curr_qid': id + 1,
-            'respondent_id': respid
+            'left_snippets': alg_to_snippets[left_alg][q_id],
+            'right_snippets': alg_to_snippets[right_alg][q_id],
+            'query_name': alg_to_snippets[right_alg][q_id][0][0],
+            'curr_qid': q_id + 1,
+            'respondent_id': respondent_id
         }
         return render(request, 'version2/home.html', context)
     else:
-        return redirect('version2-thanks', respondent_id=respid)
+        return redirect('version2-thanks', respondent_id=respondent_id)
 
 def thanks(request, respondent_id):
     context = {
