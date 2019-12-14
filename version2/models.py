@@ -9,7 +9,7 @@ class Respondent(models.Model):
     ip_addr = models.CharField(max_length=50, default="0.0.0.0")
     mturk_id = models.CharField(max_length=50, default="None")
     browser = models.CharField(max_length=70, default="None")
-    
+    curr_q = models.PositiveSmallIntegerField(default=0)
     def __str__(self):
         return self.age + ", " + self.gender + ", " + self.education
     

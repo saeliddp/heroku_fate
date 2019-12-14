@@ -4,6 +4,7 @@ from version2.extraction import *
 from django.shortcuts import redirect
 from version2.models import *
 import random
+from django.views.decorators.cache import cache_control
 
 num_search_results = 5
 # algorithms to be initially displayed on the left and right, respectively
@@ -81,16 +82,42 @@ def getAlgs(id):
     
     return [left_alg, right_alg]
 
-def home(request, id):      
+def redir(request, q_id, respondent_id):
+    user = Respondent.objects.filter(id=respondent_id)[0]
+    user.curr_q = max([user.curr_q, q_id])
+    user.save()
+    id = user.curr_q
+        
+    if 'radio' in request.GET:
+        context = {
+            'curr_qid': id,
+            'respondent_id': respondent_id,
+            'radio': request.GET['radio'],
+            'time_elapsed': request.GET['time_elapsed']
+        }
+    else:
+        context = {
+            'curr_qid': id,
+            'respondent_id': respondent_id,
+            'radio': 'redir',
+            'time_elapsed': '-1'
+        }
+    return render(request, 'version2/redir.html', context)
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+def home(request, q_id, respondent_id):    
+    request.session.flush()
     global left_alg
     global right_alg
     
-    respid = request.GET['respondent_id']
+    respid = respondent_id
+    user = Respondent.objects.filter(id=respid)[0]
+    id = q_id
         
     left_alg = getAlgs(id)[0]
     right_alg = getAlgs(id)[1]
         
-    if id > 1 and id <= 21:
+    if id > 1 and id <= 21 and request.GET['radio'] != 'redir' and request.GET['time_elapsed'] != '-1':
         # send data to server
         # we will have to have a 'NO_CHOICE' algorithm in our database to represent 
         # if the user didn't choose at all
@@ -98,7 +125,7 @@ def home(request, id):
         prev_right_alg = getAlgs(id-1)[1]
         choice = 'NO_CHOICE'
         not_choice = 'NO_CHOICE'
-        if 'radio' in request.GET:
+        if 'radio' in request.GET and request.GET['radio'] != 'redir':
             if request.GET['radio'] == 'left':
                 choice = prev_left_alg
                 not_choice = prev_right_alg
@@ -106,13 +133,12 @@ def home(request, id):
                 choice = prev_right_alg
                 not_choice = prev_left_alg
 
-        response = Response(respondent=Respondent.objects.filter(id=respid)[0],
+        response = Response(respondent=user,
                             query=Query.objects.filter(query_id=id-1)[0],
                             chosen_alg=Algorithm.objects.filter(name=choice)[0],
                             unchosen_alg=Algorithm.objects.filter(name=not_choice)[0],
                             time_elapsed=int(request.GET['time_elapsed']))
         response.save()
-        
     if id <= 20:
         context = {
             'left_snippets': alg_to_snippets[left_alg][id],
@@ -121,7 +147,7 @@ def home(request, id):
             'curr_qid': id + 1,
             'respondent_id': respid
         }
-        return render(request, 'version2/home.html', context);
+        return render(request, 'version2/home.html', context)
     else:
         return redirect('version2-thanks', respondent_id=respid)
 

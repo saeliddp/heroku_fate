@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+	<form action="../../home{{ curr_qid }}/{{ respondent_id }}/" id="to_home">
+	
+  <input type="hidden" name="time_elapsed" value="{{ time_elapsed }}" id="time_elapsed_input">
+  <input type="hidden" name="radio" value="{{ radio }}">
+</form>
+</body>
+<script>
+function redir() {
+	document.getElementById("to_home").submit();
+}
+
+setTimeout(redir, 500);
+</script>
+</html>

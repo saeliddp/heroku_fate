@@ -73,8 +73,7 @@ img {
 {% load staticfiles %}
 <img src="{% static 'myapp/demo.jpg' %}" alt="demo">
 <div style="text-align: center">
-	<form action="../home1/" id="to_home">
-	<input type="hidden" name="respondent_id" value="{{ respondent_id }}">
+	<form action="../redir1/{{ respondent_id }}/" id="to_home">
 	<input type="submit" value="begin" class="button">
 </div>
 </form>
