@@ -59,12 +59,17 @@ def demographics(request):
         return redirect('version2-instructions', respondent_id=respondent.id)
     else:
         return render(request, 'version2/demographics.html')
-    
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def instructions(request, respondent_id):
-    context = {
-        'respondent_id': respondent_id
-    }
-    return render(request, 'version2/instructions.html', context)
+    user = Respondent.objects.filter(id=respondent_id)[0]
+    if user.curr_q != 0:
+        return redirect('version2-redir', q_id=1, respondent_id=respondent_id)
+    else:
+        context = {
+            'respondent_id': respondent_id
+        }
+        return render(request, 'version2/instructions.html', context)
 
 def getAlgs(id):
     if id < 11 and not swap[id-1]:
