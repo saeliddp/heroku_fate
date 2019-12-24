@@ -26,6 +26,7 @@ alg_to_snippets = {
 
 # whether or not to swap the left and right algorithms on a given turn
 swap = [False, True, True, False, True, True, True, False, False, False, False, False, True, True, False, False, True, False, True, True, False]
+qid_map = [21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 2, 5, 6, 8, 15, 18, 20]
 
 def get_ip_address(request):
     """ use requestobject to fetch client machine's IP Address """
@@ -107,7 +108,7 @@ def redir(request, q_id, respondent_id):
         
         if 'time_elapsed' in request.GET:
             response = Response(respondent=user,
-                                query=Query.objects.filter(query_id=id)[0],
+                                query=Query.objects.filter(query_id=qid_map[id-1])[0],
                                 chosen_alg=Algorithm.objects.filter(name=choice)[0],
                                 unchosen_alg=Algorithm.objects.filter(name=not_choice)[0],
                                 time_elapsed=int(request.GET['time_elapsed']))
