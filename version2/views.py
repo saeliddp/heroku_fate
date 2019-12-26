@@ -26,6 +26,7 @@ alg_to_snippets = {
 
 # whether or not to swap the left and right algorithms on a given turn
 swap = [False, True, True, False, True, True, True, False, False, False, False, False, True, True, False, False, True, False, True, True, False]
+# represents the query_id values corresponding to the order of data in snippet.pickle
 qid_map = [21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 2, 5, 6, 8, 15, 18, 20]
 
 def get_ip_address(request):
