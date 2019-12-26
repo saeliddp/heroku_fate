@@ -6,7 +6,7 @@ from version2.models import *
 import random
 from django.views.decorators.cache import cache_control
 
-num_search_results = 5
+num_search_results = 10
 # algorithms to be initially displayed on the left and right, respectively
 left_alg = "0g"
 right_alg = "03gfp"
